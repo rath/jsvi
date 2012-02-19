@@ -391,7 +391,7 @@ function _willclick(e) {
     cclick = window.setTimeout(function () {
         cclick = undefined;
         _cursortoxy(x, y);
-    }, 200);
+    }, 1000);
     return false;
 }
 function _subclick(e) {
@@ -2305,6 +2305,12 @@ function term_keypress(e) {
     return false;
 }
 function term_keypress_inner(e, synth) {
+    // 'ㄱ' 12593
+    // '힣' 55203
+//    console.log('charCode: ' + e.charCode + ', keyCode: ' + e.keyCode);
+//    if(true)
+//        return;
+
     var k = e.which;
     var kc;
     if (e.charCode) {
@@ -3507,7 +3513,8 @@ function _redraw_term() {
     zx = undefined; // break
 
     if (!spelling && tospell > 0) {
-        spelling = true;
+        /*
+         spelling = true;
         var xh = _xhttp();
         osp = osp.substr(0, osp.length - 1);
         xh.open("GET", "spell.cgi?" + osp, true);
@@ -3534,6 +3541,7 @@ function _redraw_term() {
                     if (v == undefined || v == '') {
                         brokenwords[term] = true;
                         suggestions[term] = new Array();
+
                     } else if (v == term) {
                         safewords[term] = true;
                     } else {
@@ -3551,6 +3559,7 @@ function _redraw_term() {
             }
         };
         xh.send(undefined);
+        */
     }
     if (cursory == (h - 1)) {
         tools.style.display = 'none';
@@ -3701,7 +3710,8 @@ function editor(t) {
     tools.style.position = 'absolute';
     tools.style.right = '0px';
     tools.style.bottom = '0px';
-    tools.innerHTML = ''
+    tools.innerHTML = '';
+    /*
         + '<input tabindex="-1" type="button" value="B" style="font-weight:bold;" onClick="term_command(\':F!b\');" />'
         + '<input tabindex="-1" type="button" value="I" style="font-style:italic;" onClick="term_command(\':F!i\');" />'
         + '<input tabindex="-1" type="button" value="U" style="text-decoration:underline;" onClick="term_command(\':F!u\');" />'
@@ -3710,6 +3720,7 @@ function editor(t) {
         + '&nbsp;'
         + '<input tabindex="-1" type="button" value="Abort" onClick="term_command(\':q?\');" />'
         + '<input tabindex="-1" type="button" value="Save and Close" onClick="term_command(\':wq\');" />'
+        */
     cursor.onclick = _pass_click;
     cursor.ondblclick = _pass_dblclick;
 
@@ -3721,7 +3732,7 @@ function editor(t) {
     if (once) document.body.appendChild(backing);
     document.body.appendChild(cursor);
 
-    cursoriv = window.setInterval(_redraw_cursor, 300);
+    cursoriv = window.setInterval(_redraw_cursor, 200);
 
     term.style.position = 'absolute';
     term.style.top = '0px';

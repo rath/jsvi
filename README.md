@@ -13,7 +13,7 @@ GPL version 3.
 * `<link rel="stylesheet" href="vi.css" type="text/css" />`
 * `<textarea name="body" onfocus="editor(this);">blah</textarea>` 
 
-# What is the difference with the original?
+# What are the differences with the original?
 
 We have plan to add as below. 
 

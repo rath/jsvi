@@ -1,12 +1,14 @@
 .editor {
-	color: #333;
-	background-color: #eee;
+	color: #fff;
+	background-color: #0d1521;
 }
 
 html,body {
 	height: 100%;
 }
+
 .print, .editor, .editorcursor { display: none; }
+
 @media print {
 	.editor { display:none !important; }
 	html,body { overflow:auto !important; }

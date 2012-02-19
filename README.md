@@ -23,4 +23,5 @@ We have plan to add as below.
 
 # Authors 
 
-* 
+* Min-Jong Kim (pistos2) 
+* Jang-Ho Hwang (rath) 

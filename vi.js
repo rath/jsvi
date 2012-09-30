@@ -2277,6 +2277,7 @@ function term_keyfix(e) {
         || ch == 38 || ch == 40 || ch == 127
         || ch == 33 || ch == 34 || ch == 36
         || ch == 35 || ch == 45 || ch == 46
+        || ch == 27 || ch == 91
         || ch == 57373
         || ch == 57374
         || ch == 57375
@@ -2545,7 +2546,7 @@ function term_keypress_inner(e, synth) {
         lastkey = undefined;
     }
 
-    if (k >= 57373 && k <= 57376 && !synth) {
+    if (57373 <= k&&k <= 57376 && !synth) {
         // bail
         return
     } else if (!synth && (k < 57373 || k > 57376)) {
@@ -2627,7 +2628,7 @@ function term_keypress_inner(e, synth) {
         kc = 'x';
         lk = undefined;
         lastkey = undefined;
-    } else if (synth && k != 8) {
+    } else if (synth && (k != 8 && k != 27)) {
         return;
     }
 

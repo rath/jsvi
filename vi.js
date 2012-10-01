@@ -37,6 +37,7 @@ var term_rows;
 var term_win_width;
 var term_win_height;
 var term_cur_width;
+var term_cur_width2;
 
 var tools;
 var suggest;
@@ -129,6 +130,8 @@ safewords['unicode-aware'] = true;
 safewords['developer-centric'] = true;
 
 var doing_backing_paste = false;
+
+var _h = hangul.attachIfHangul;
 
 function _true() {
     return true;
@@ -2141,20 +2144,33 @@ function term_calcy() {
     }
     _calcy(gg, xx.substr(zleft, xx.length - zleft), xg.substr(zleft, xg.length - zleft));
 }
-function term_calcx() {
-    if (cursorx != cursor._lastx) {
-        cursor.style.left = (cursorx * (term_cur_width)) + 'px';
-        cursor._lastx = cursorx;
-        term_calcy();
+function compute_cursor_left() {
+    var cursor_left = 0;
+    for(var i=0; i<cursorx; i++) {
+        var letter = file[cursory + base][i+left];
+        cursor_left += hangul.isHangul(letter) ? term_cur_width2 : term_cur_width;
     }
+    return cursor_left;
+}
+function term_calcx() {
+    //if (cursorx != cursor._lastx) {
+        //cursor.style.left = (cursorx * (term_cur_width)) + 'px';
+        //cursor._lastx = cursorx;
+
+        // XXX: may be slow
+        cursor.style.left = compute_cursor_left() + 'px';
+        //console.log(cursor._lastx, cursorx, (cursorx * (term_cur_width)), cursor.style.left);
+
+        term_calcy();
+    //}
 }
 function term_scrollto() {
-
     var h = term_rows;
     var w = term_cols;
     var x = cursorx + left;
     var y = cursory + base;
     var t = file[y];
+    //console.log('[term_scrollto]', h,w,'x: ', x,', left: ', left, y, ', command: ', command, ',', t);
 
     if (command == '') h--;
 
@@ -2277,6 +2293,7 @@ function term_keyfix(e) {
         || ch == 38 || ch == 40 || ch == 127
         || ch == 33 || ch == 34 || ch == 36
         || ch == 35 || ch == 45 || ch == 46
+        || ch == 27 || ch == 91
         || ch == 57373
         || ch == 57374
         || ch == 57375
@@ -2307,7 +2324,7 @@ function term_keypress(e) {
 function term_keypress_inner(e, synth) {
     // 'ㄱ' 12593
     // '힣' 55203
-//    console.log('charCode: ' + e.charCode + ', keyCode: ' + e.keyCode);
+    //console.log('charCode: ' + e.charCode + ', keyCode: ' + e.keyCode);
 //    if(true)
 //        return;
 
@@ -2357,6 +2374,8 @@ function term_keypress_inner(e, synth) {
     lastkey = kc;
 
     if (kc == undefined) kc = '';
+
+    //console.log('charCode: ' + e.charCode + ', keyCode: ' + e.keyCode, ", k: ", k, ", kc: ", kc, ", mod: ", mod, ", ctrl: ", ctrl, ", shift: ", shift, ", meta: ", ", lk: ", lk, ", mode:", mode, ", emacsen: ", emacsen, "fakemode:", fakemode, ", synth: ", synth);
 
     if (!emacsen && mode == 0) {
         if (kc == 'U') {
@@ -2545,7 +2564,7 @@ function term_keypress_inner(e, synth) {
         lastkey = undefined;
     }
 
-    if (k >= 57373 && k <= 57376 && !synth) {
+    if (57373 <= k&&k <= 57376 && !synth) {
         // bail
         return
     } else if (!synth && (k < 57373 || k > 57376)) {
@@ -2627,7 +2646,7 @@ function term_keypress_inner(e, synth) {
         kc = 'x';
         lk = undefined;
         lastkey = undefined;
-    } else if (synth && k != 8) {
+    } else if (synth && (k != 8 && k != 27)) {
         return;
     }
 
@@ -3182,10 +3201,20 @@ function term_keypress_inner(e, synth) {
             cursorx--;
         } else {
             if (kc == '') return;
-            file[cursory + base] = lx + kc + ly;
+            //file[cursory + base] = lx + kc + ly;
+            var lxkc = _h(lx, kc);
+            file[cursory + base] = _h(lxkc, ly);
             tags[cursory + base] = gx + String.fromCharCode(tagstyle) + gy;
-            lastinsert += kc;
-            cursorx += kc.length;
+            //lastinsert += kc;
+            lastinsert = _h(lastinsert, kc);
+            var prevcursorx = cursorx;
+            //var kclength = kc.length;
+            var kclength = lxkc.length - lx.length;
+            cursorx = cursorx + kclength;
+            //if (lastinsert == "도") {
+            //    var a = 1+1;
+            //}
+            //console.log([cursory, base], file[cursory+base], [lx, kc, ly], lastinsert, [prevcursorx, "+", kc.length, "=", cursorx]);
         }
         term_scrollto();
     }
@@ -3217,7 +3246,6 @@ function _redraw_term_force() {
     while (term.firstChild) term.removeChild(term.firstChild);
 }
 function _redraw_term() {
-
     var h = term_rows;
     var w = term_cols;
 
@@ -3640,6 +3668,12 @@ function editor_disable(sav) {
 }
 function _cursor_fix() {
     term_cur_width = cursor.offsetWidth;
+
+    // 2-byte width
+    var cursorValue = cursor.innerHTML;
+    cursor.innerHTML = '한';
+    term_cur_width2 = cursor.offsetWidth;
+    cursor.innerHTML = cursorValue;
 }
 function _zmp(o) {
     o.style.marginTop = '0px';

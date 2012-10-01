@@ -3202,13 +3202,19 @@ function term_keypress_inner(e, synth) {
         } else {
             if (kc == '') return;
             //file[cursory + base] = lx + kc + ly;
-            file[cursory + base] = _h(_h(lx, kc), ly);
+            var lxkc = _h(lx, kc);
+            file[cursory + base] = _h(lxkc, ly);
             tags[cursory + base] = gx + String.fromCharCode(tagstyle) + gy;
             //lastinsert += kc;
             lastinsert = _h(lastinsert, kc);
             var prevcursorx = cursorx;
-            cursorx += kc.length;
-            console.log([cursory, base], file[cursory+base], [lx, kc, ly], lastinsert, prevcursorx, kc.length, cursorx);
+            //var kclength = kc.length;
+            var kclength = lxkc.length - lx.length;
+            cursorx = cursorx + kclength;
+            //if (lastinsert == "도") {
+            //    var a = 1+1;
+            //}
+            //console.log([cursory, base], file[cursory+base], [lx, kc, ly], lastinsert, [prevcursorx, "+", kc.length, "=", cursorx]);
         }
         term_scrollto();
     }

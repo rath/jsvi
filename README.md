@@ -21,7 +21,7 @@ We have plan to add as below.
 * Make it useful. 
 * Bug fixes.
 
-# Authors 
+# Contributors
 
-* Min-Jong Kim (pistos2) 
+* Jang-hwan, Kim (jangxyz) 
 * Jang-Ho Hwang (rath) 
